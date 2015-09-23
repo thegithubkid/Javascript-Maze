@@ -1,1 +1,94 @@
-//write maze code
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+				canvas
+				{
+					border: 1px solid black;
+					background-color: yellow;
+				}
+				h1
+				{
+					text-align: left;
+				}
+		</style>
+	</head>
+	<body>
+		<h1>Four Square</h1>
+		<canvas id="Canvas" width="800" height="800">Your browser does not support the HTML5 canvas tag.</canvas>
+		<br>
+		<script>
+			var canvas = document.getElementById("Canvas");
+			var ctx = canvas.getContext("2d");
+			var x_origin = 50;
+			var radius = 50;
+			var y_origin = (canvas.height - radius);
+			
+			//create a new 2d array and pass it to grid
+			var grid = createBoard();
+			
+			//call the draw board function to display the grid
+			//requires a 2d array in order to draw
+			drawBoard(grid);
+			
+			//event to check if the mouse is clicked within canvas boundaries
+			//also calls the draw function to update
+			canvas.addEventListener("click", mouseClick);
+			
+			//fuction to draw the board/grid from a 2d array
+			//draws the circles based on the array index length
+			//but colors the circles from the contents of the 2d array
+			function drawBoard(g)
+			{
+				for(var i = 0; i < g.length; i++)
+				{
+					var x_axis = x_origin + 100*i;
+					
+					for(var j = 0; j < g[i].length; j++)
+					{
+						var y_axis = y_origin - 100*j;
+						
+						ctx.beginPath();
+						ctx.arc(x_axis,y_axis,radius,0,2*Math.PI);
+						ctx.fillStyle = g[i][j];
+						ctx.stroke();
+						ctx.fill();
+					}
+				}
+			}
+			//function that detects mouse click and where it was clicked
+			//colors a circle depending where the mouse is clicked on the canvas
+			function mouseClick(event)
+			{
+				var x = event.x;
+				
+				x -= canvas.offsetLeft;
+				x = parseInt(x / (radius * 2));	//convert x coordinate to column number
+				
+				//color the bottom-most circle on the grid
+				//depending on the column clicked on
+				for(var i = 0; i < grid[x].length; i++)
+				{
+					if(grid[x][i] == "white")
+					{
+						grid[x][i] = "red";
+						break;
+					}
+				}
+				drawBoard(grid);
+			}
+			//creates a 2d array that contains a string of "color" elements
+			//the 2d array contains blank "white" elements
+			function createBoard()
+			{
+				var board = new Array(8);
+				
+				for(var i = 0; i < board.length; i++)
+				{
+					board[i] = new Array("white","white","white","white","white","white","white","white");
+				}
+				return board;
+			}
+		</script> 
+	</body>
+</html>
