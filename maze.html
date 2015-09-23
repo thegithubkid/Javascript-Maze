@@ -23,6 +23,7 @@
 			var x_origin = 50;
 			var radius = 50;
 			var y_origin = (canvas.height - radius);
+			var moveMade = false;
 			
 			//create a new 2d array and pass it to grid
 			var grid = createBoard();
@@ -71,11 +72,16 @@
 				{
 					if(grid[x][i] == "white")
 					{
+						moveMade = true;
 						grid[x][i] = "red";
 						break;
 					}
 				}
 				drawBoard(grid);
+				if (moveMade == true) {
+					computerPlayer();
+				}
+				
 			}
 			//creates a 2d array that contains a string of "color" elements
 			//the 2d array contains blank "white" elements
@@ -89,6 +95,24 @@
 				}
 				return board;
 			}
+
+			function computerPlayer(){
+				var x = Math.floor((Math.random() * 7) + 1);
+				console.log (x);
+				for(var i = 0; i < grid[x].length; i++)
+				{
+					if(grid[x][i] == "white")
+					{
+						grid[x][i] = "blue";
+						break;
+					}
+				}
+				drawBoard(grid);
+				moveMade = false;
+			}
+
+			
+
 		</script> 
 	</body>
 </html>
