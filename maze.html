@@ -4,19 +4,69 @@
 		<style>
 				canvas
 				{
-					border: 1px solid black;
+					border: 15px dotted blue;
 					background-color: yellow;
+
+					animation:colorchange 5s linear infinite;
+				}
+				@keyframes colorchange
+				{
+					0%   {background:black;}
+					25%  {background:yellow;}
+					50%  {background:green;}
+					100% {background:purple;}
 				}
 				h1
 				{
 					text-align: left;
+					color: white;
+
 				}
+				#oneplayer{
+					background-color: blue;
+					color: white;
+					height: 2em;
+					width: 20em;
+					border-radius: 50px/10px;
+				}
+				#twoplayer{
+					background-color: red;
+					color: white;
+					height: 2em;
+					width: 20em;
+					border-radius: 50px/10px;
+				}
+				fieldset{
+					width: 12em;
+					border: 2px solid red;
+					color: white;
+					box-shadow: 10px 10px yellow;
+
+				}
+				body{
+					background-image: url('http://www.freedomwallpaper.com/wallpapers/wallpaper-supernova.jpg');
+					padding-left: 400px;
+
+				}
+				
+
 		</style>
 	</head>
 	<body>
 		<h1>Four Square</h1>
-		<canvas id="Canvas" width="800" height="800">Your browser does not support the HTML5 canvas tag.</canvas>
+		<canvas id="Canvas" width="800px" height="800px">Your browser does not support the HTML5 canvas tag.</canvas>
 		<br>
+		<button id="oneplayer">1 Player</button>
+		<button id="twoplayer">2 Player</button>
+
+		<form>
+			<fieldset>
+			<legend>Computer Difficulty</legend>
+			<input type="radio" name="difficulty" id = "dumb" value="dumb">Dumb Computer<br>
+			<input type="radio" name ="difficulty" id="smart" value="smart">Not as Dumb 
+			Computer
+		</fieldset>
+		<form>
 		<script>
 			var canvas = document.getElementById("Canvas");
 			var ctx = canvas.getContext("2d");
@@ -25,10 +75,13 @@
 			var y_origin = (canvas.height - radius);
 			var moveMade = false;
 			var size = 8;
-			
+			var playersTurn = "red";
 			//create a new 2d array and pass it to grid
 			var grid = createBoard();
-			
+			var onePlayerButton = document.getElementById("oneplayer");
+			var twoPlayerButton = document.getElementById("twoplayer");
+
+			var gameover = false;
 			//call the draw board function to display the grid
 			//requires a 2d array in order to draw
 			drawBoard(grid);
@@ -36,27 +89,235 @@
 			//event to check if the mouse is clicked within canvas boundaries
 			//also calls the draw function to update
 			canvas.addEventListener("click", mouseClick);
-			
+			onePlayerButton.addEventListener("click", function()
+			{
+				document.getElementById("dumb").checked = true;
+				ocument.getElementById("dumb").disabled = false;
+				document.getElementById("smart").disabled = false;
+				twoPlayerButton.disabled = true;
+			});
+			twoPlayerButton.addEventListener("click", function(){
+				document.getElementById("dumb").disabled = true;
+				document.getElementById("smart").disabled = true;
+			});
+
+			function checkWin(x, y, color)
+			{
+				var count=0;
+				//check for vertical win
+				for(var i=0; i< size; i++)
+				{
+					count =0;
+					for(var j=0; j< size; j++)
+					{
+						if(grid[i][j] == color)
+						{
+							count++;
+						}
+						else
+						{
+							count =0;
+						}
+						if(count == 4)
+						{
+							drawBoard(grid);
+							window.alert(color.toUpperCase() + " WINS");
+							var restart = confirm("Play again?");
+							if(restart == true)
+							{
+								location.reload();
+							}
+							return;
+						}
+					}
+				}
+				//check for horizontal win
+				for(var j = 0; j< size; j++)
+				{
+					count = 0;
+					for(var i =0; i<size; i++)
+					{
+						if(grid[i][j] == color)
+						{
+							count++;
+						}
+						else
+						{
+							count = 0;
+						}
+						if(count == 4)
+						{
+							drawBoard(grid);
+							window.alert(color.toUpperCase() + " WINS");
+							var restart = confirm("Play again?");
+							if(restart == true)
+							{
+								location.reload();
+							}
+							return;
+						}
+					}
+				}
+				count = 0;
+				//check for diagonl win (top-right to bottom-left)
+				for(var i = 0; i<4; i++)
+				{
+					if(x+i > 7 || y+i > 7)
+					{
+						break;
+					}
+					if(grid[x+i][y+i] == color)
+					{
+						count++;
+					}
+					if(count == 4)
+					{
+						drawBoard(grid);
+						window.alert(color.toUpperCase() + " WINS");
+						var restart = confirm("Play again?");
+						if(restart == true)
+						{
+							location.reload();
+						}
+						return;
+					}
+				}
+				//check for diagonl win (top-right to bottom-left)
+				for(var i = 1; i<4; i++)
+				{
+					if(x-i < 0 || y-i < 0)
+					{
+						break;
+					}
+					if(grid[x-i][y-i] == color)
+					{
+						count++;
+					}
+					else
+					{
+						break;
+					}
+					if(count == 4)
+					{
+						drawBoard(grid);
+						window.alert(color.toUpperCase() + " WINS");
+						var restart = confirm("Play again?");
+						if(restart == true)
+						{
+							location.reload();
+						}
+						return;
+					}
+				}
+				count = 0;
+				//check for diagonl win (top-left to bottom-right)
+				for(var i = 0; i<4; i++)
+				{
+					if(x-i < 0 || y+i > 7)
+					{
+						break;
+					}
+					if(grid[x-i][y+i] == color)
+					{
+						count++;
+					}
+					else
+					{
+						break;
+					}
+					if(count == 4)
+					{
+						drawBoard(grid);
+						window.alert(color.toUpperCase() + " WINS");
+						var restart = confirm("Play again?");
+						if(restart == true)
+						{
+							location.reload();
+						}
+						return;
+					}
+				}
+				//check for diagonl win (top-left to bottom-right)
+				for(var i = 1; i<4; i++)
+				{
+					if(x+i > 7 || y-i < 7)
+					{
+						break;
+					}
+					if(grid[x+i][y-i] == color)
+					{
+						count++;
+					}
+					else
+					{
+						break;
+					}
+					if(count == 4)
+					{
+						drawBoard(grid);
+						window.alert(color.toUpperCase() + " WINS");
+						var restart = confirm("Play again?");
+						if(restart == true)
+						{
+							location.reload();
+						}
+						return;
+					}
+				}
+
+				
+
+			}
+
+
+			//Looks through the whole board looking for an empty space
+			function checkForDraw()
+			{
+				if(!gameover)
+				{
+					gameover = true;
+					for(var i =0; i<size;i++)
+					{
+						for(var j=0; j<size; j++)
+						{
+							if(grid[i][j] == "white")
+							{
+								gameover = false;
+							}
+							
+						}
+					}
+					if(gameover)
+					{
+						window.alert("DRAW");
+					}
+				}
+				
+				
+			}
 			//fuction to draw the board/grid from a 2d array
 			//draws the circles based on the array index length
 			//but colors the circles from the contents of the 2d array
 			function drawBoard(g)
 			{
-				for(var i = 0; i < g.length; i++)
-				{
-					var x_axis = x_origin + 100*i;
-					
-					for(var j = 0; j < g[i].length; j++)
+				
+					for(var i = 0; i < g.length; i++)
 					{
-						var y_axis = y_origin - 100*j;
+						var x_axis = x_origin + 100*i;
 						
-						ctx.beginPath();
-						ctx.arc(x_axis,y_axis,radius,0,2*Math.PI);
-						ctx.fillStyle = g[i][j];
-						ctx.stroke();
-						ctx.fill();
+						for(var j = 0; j < g[i].length; j++)
+						{
+							var y_axis = y_origin - 100*j;
+							
+							ctx.beginPath();
+							ctx.arc(x_axis,y_axis,radius,0,2*Math.PI);
+							ctx.fillStyle = g[i][j];
+							ctx.stroke();
+							ctx.fill();
+						}
 					}
-				}
+				
+				
 			}
 			//function that detects mouse click and where it was clicked
 			//colors a circle depending where the mouse is clicked on the canvas
@@ -74,14 +335,37 @@
 					if(grid[x][i] == "white")
 					{
 						moveMade = true;
-						grid[x][i] = "red";
+						grid[x][i] = playersTurn;
 						drawBoard(grid);
+						checkWin(x, i, grid[x][i]);
+						checkForDraw();
 						break;
 					}
 				}
 				
 				if (moveMade == true) {
-					smartComputerPlayer();
+					if(document.getElementById("dumb").checked)
+					{
+						playersTurn = "red";
+						computerPlayer();
+					}
+					else if(document.getElementById("smart").checked)
+					{
+						playersTurn = "red";
+						smartComputerPlayer();
+					}
+					else
+					{
+						if(playersTurn == "red")
+						{
+							playersTurn = "blue";
+						}
+						else
+						{
+							playersTurn = "red";
+						}
+					}
+						
 				}
 				
 			}
@@ -100,16 +384,21 @@
 
 			function computerPlayer(){
 				var x = Math.floor((Math.random() * 7) + 1);
-				console.log (x);
+				//console.log (x);
 				for(var i = 0; i < grid[x].length; i++)
 				{
 					if(grid[x][i] == "white")
 					{
 						grid[x][i] = "blue";
+						drawBoard(grid);
+						checkWin(x, i, grid[x][i]);
+						checkForDraw();
 						break;
 					}
 				}
-				drawBoard(grid);
+
+				
+
 				moveMade = false;
 			}
 /*
@@ -129,14 +418,13 @@ it is weighted then picked the highest weight.
 							arr += checkRight(i,j);
 							arr += leftDown(i,j);
 							arr += rightDown(i,j);
-							
 						}
 					}
-					console.log("arr " + arr + "row " + i);
+					//console.log("arr " + arr + "row " + i);
 					weightArr.push(arr);
 				}
 				var x = weightArr.indexOf(Math.max.apply(Math, weightArr));
-				console.log( x);
+				//console.log( x);
 				if (x == 0){
 					x = Math.floor((Math.random() * 7) + 1);
 				}
@@ -145,10 +433,12 @@ it is weighted then picked the highest weight.
 					if(grid[x][i] == "white")
 					{
 						grid[x][i] = "blue";
+						drawBoard(grid);
+						checkWin(x, i, grid[x][i]);
+						checkForDraw();
 						break;
 					}
 				}
-				drawBoard(grid);
 			}
 
 			function checkLeft(x,y){
